@@ -1,4 +1,4 @@
-const socketController = (socket: any) => {
+export const socketController = (socket: any) => {
 
     socket.on('send-message', (payload: any) => {
         console.log('execute socket')
@@ -7,7 +7,3 @@ const socketController = (socket: any) => {
 
 }
 
-
-module.exports = {
-    socketController
-}

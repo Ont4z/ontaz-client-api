@@ -1,20 +1,18 @@
 import express, { Application } from "express";
 import cors from 'cors';
-import http from 'http';
-import SocketIO from 'socket.io';
+// import { socketController } from '../sockets/sockets.controller'
 
 import authRoutes from '../routes/auth.routes';
 
 
 const { dbConnection } = require('../database/config');
 
-const { socketController } = require('../sockets/sockets.controller');
 
 class Server {
   private app: Application;
   private port: string;
-  private server: http.Server;
-  private io: SocketIO.Server;
+  public server: any;
+  public io: any;
   private apiPaths = {
     auth: '/api/auth'
   }
@@ -22,7 +20,7 @@ class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || "9001";
-    this.server = http.createServer(this.app);
+    this.server = require('http').createServer(this.app);
     this.io = require('socket.io')(this.server);
 
     this.connectDatabase();
@@ -52,11 +50,13 @@ class Server {
   }
 
   sockets() {
-    this.io.on('connection', socketController)
+    this.io.on('connection', (socket: any) => {
+      console.log('Client connected', socket.id);
+    });
   }
 
   listen() {
-    this.app.listen(this.port, () => {
+    this.server.listen(this.port, () => {
       console.log("Server running on port " + this.port + "...");
     });
   }
