@@ -1,9 +1,10 @@
 import express, { Application } from "express";
 import cors from 'cors';
+import admin from 'firebase-admin'
 // import { socketController } from '../sockets/sockets.controller'
 
 import authRoutes from '../routes/auth.routes';
-
+import { firebase } from '../firebase/firebaseConfig'
 
 const { dbConnection } = require('../database/config');
 
@@ -13,6 +14,8 @@ class Server {
   private port: string;
   public server: any;
   public io: any;
+  public firebase: admin.app.App;
+
   private apiPaths = {
     auth: '/api/auth'
   }
@@ -22,6 +25,7 @@ class Server {
     this.port = process.env.PORT || "9001";
     this.server = require('http').createServer(this.app);
     this.io = require('socket.io')(this.server);
+    this.firebase = firebase
 
     this.connectDatabase();
 
@@ -61,5 +65,7 @@ class Server {
     });
   }
 }
+
+
 
 export default Server;
