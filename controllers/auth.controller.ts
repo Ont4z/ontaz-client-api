@@ -4,12 +4,8 @@ import User from '../models/users.model'
 import { generateJWTToken } from '../helpers/jwt.helper';
 import Server from "../server/server";
 
-
-
 export const loginWithEmailAndPassword = async (req: Request, res: Response) => {
     const server = new Server();
-
-
     try {
         const { uid, email, displayName } = await server.firebase.auth().createUser({
             email: 'ivan.perez.chan@hotmail.com',

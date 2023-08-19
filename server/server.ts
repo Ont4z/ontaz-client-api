@@ -4,6 +4,8 @@ import admin from 'firebase-admin'
 // import { socketController } from '../sockets/sockets.controller'
 
 import authRoutes from '../routes/auth.routes';
+import categoryRoutes from '../routes/category.routes';
+
 import { firebase } from '../firebase/firebaseConfig'
 
 const { dbConnection } = require('../database/config');
@@ -17,7 +19,8 @@ class Server {
   public firebase: admin.app.App;
 
   private apiPaths = {
-    auth: '/api/auth'
+    auth: '/api/auth',
+    category: '/api/category',
   }
 
   constructor() {
@@ -51,6 +54,7 @@ class Server {
 
   routes() {
     this.app.use(this.apiPaths.auth, authRoutes);
+    this.app.use(this.apiPaths.category, categoryRoutes);
   }
 
   sockets() {
