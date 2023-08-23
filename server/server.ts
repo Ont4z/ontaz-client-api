@@ -5,6 +5,7 @@ import admin from 'firebase-admin'
 
 import authRoutes from '../routes/auth.routes';
 import categoryRoutes from '../routes/category.routes';
+import subCategoryRoutes from '../routes/subCategory.routes';
 
 import { firebase } from '../firebase/firebaseConfig'
 
@@ -21,6 +22,7 @@ class Server {
   private apiPaths = {
     auth: '/api/auth',
     category: '/api/category',
+    subCategory: '/api/subCategory',
   }
 
   constructor() {
@@ -55,6 +57,7 @@ class Server {
   routes() {
     this.app.use(this.apiPaths.auth, authRoutes);
     this.app.use(this.apiPaths.category, categoryRoutes);
+    this.app.use(this.apiPaths.subCategory, subCategoryRoutes);
   }
 
   sockets() {

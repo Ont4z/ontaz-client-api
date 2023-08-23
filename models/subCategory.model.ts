@@ -1,25 +1,24 @@
 import { model, Schema, Document } from 'mongoose';
 
-export interface ICategory extends Document {
+export interface ISubCategory extends Document {
     id: string;
     name: {
         es: string;
         en: string;
         fr: string;
     },
-    imageUrl: string;
+    idCategory: Schema.Types.ObjectId;
     isDeleted: boolean;
 }
 
-export interface ICategoryResponse {
+export interface ISubCategoryResponse {
     id: string;
-    name: string,
-    imageUrl: string;
+    name: string
 }
 
 
 
-const categorySchema = new Schema<ICategory>({
+const subCategorySchema = new Schema<ISubCategory>({
     name: {
         es: {
             type: String,
@@ -34,9 +33,9 @@ const categorySchema = new Schema<ICategory>({
             required: true
         },
     },
-    imageUrl: {
-        type: String,
-        required: true
+    idCategory: {
+        type: Schema.Types.ObjectId,
+        ref: 'Categories',
     },
     isDeleted: {
         type: Boolean,
@@ -44,9 +43,9 @@ const categorySchema = new Schema<ICategory>({
     }
 })
 
-categorySchema.methods.toJSON = function () {
-    const { __v, _id, isDeleted, ...category } = this.toObject();
-    category.id = _id;
-    return category;
+subCategorySchema.methods.toJSON = function () {
+    const { __v, _id, isDeleted, ...subCategory } = this.toObject();
+    subCategory.id = _id;
+    return subCategory;
 }
-export default model<ICategory>("Categories", categorySchema)
+export default model<ISubCategory>("subCategories", subCategorySchema)
