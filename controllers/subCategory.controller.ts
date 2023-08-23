@@ -13,6 +13,7 @@ export const getSubCategoriesByIdCategory = async (req: Request, res: Response) 
             return {
                 id: subcategory.id,
                 name: subcategory.name[String(lang)],
+                idCategory: subcategory.idCategory
             }
         }))
     } catch (error) {
