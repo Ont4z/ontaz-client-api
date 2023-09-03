@@ -1,13 +1,14 @@
 import { model, Schema, Document } from 'mongoose';
 
 export interface IUser extends Document {
-    uid: string;
+    id: string;
+    firebaseId: string;
     email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
+    fullName: string;
+    phoneNumber: string;
+    codeCountry: string;
+    photoURL: string;
     status: boolean;
-    typeAccount: string;
     location: {
         type: string;
         coordinates: number[];
@@ -18,23 +19,30 @@ export interface IUser extends Document {
         fcmToken: string;
     },
     createdAt: Date;
-    crypt: {
-        salt: string;
-    }
 }
 
 const userSchema = new Schema<IUser>({
+    firebaseId: {
+        type: String,
+        required: true,
+    },
     email: String,
-    password: String,
-    firstName: String,
-    lastName: String,
+    fullName: String,
     status: {
         type: Boolean,
         default: true
     },
-    typeAccount: {
+    photoURL: {
         type: String,
-        default: 'user'
+        default: ''
+    },
+    phoneNumber: {
+        type: String,
+        required: true,
+    },
+    codeCountry: {
+        type: String,
+        default: '+52'
     },
     location: {
         type: {
@@ -46,7 +54,7 @@ const userSchema = new Schema<IUser>({
         coordinates: {
             type: [Number],
             required: false,
-            default: [-91.8130909, 18.6450665]
+            default: [0, 0]
         }
     },
     settings: {
@@ -67,17 +75,11 @@ const userSchema = new Schema<IUser>({
         type: Date,
         default: Date.now
     },
-    crypt: {
-        salt: {
-            type: String,
-            default: ''
-        }
-    },
 })
 
 userSchema.methods.toJSON = function () {
-    const { __v, _id, status, password, ...user } = this.toObject();
-    user.uid = _id;
+    const { __v, _id, status, ...user } = this.toObject();
+    user.id = _id;
     return user;
 }
 export default model<IUser>("User", userSchema)
