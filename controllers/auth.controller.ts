@@ -1,63 +1,53 @@
-import e, { Request, Response } from 'express'
+import { Request, Response } from 'express'
 import bcryptjs from 'bcryptjs'
 import User from '../models/users.model'
-import { generateJWTToken } from '../helpers/jwt.helper';
-import Server from "../server/server";
-
-export const loginWithEmailAndPassword = async (req: Request, res: Response) => {
-    // const server = new Server();
-    // try {
+// import { generateJWTToken } from '../helpers/jwt.helper';
+// import Server from "../server/server";
 
 
-    //     await server.firebase.auth().signInWithEmailAndPassword(req.body.email, req.body.password)
+export const loginUserWithEmailAndPassword = async (req: Request, res: Response) => {
+    const { email, password } = req.body;
 
-    //     console.log({
-    //         uid, email, displayName
-    //     })
+    try {
+        //verificar si el email existe
+        const usuario = await User.findOne({ email });
+        if (!usuario) {
+            return res.status(404).json({
+                message: 'usuario o password no son correctos',
+                code: 'auth/account-not-found',
+            })
+        }
 
-    // } catch (error) {
-    //     console.log(error)
-    //     return res.status(500).json({
-    //         message: 'Something went wrong',
-    //     })
-    // }
+        //verificar si el usuario esta activo
+        if (!usuario.status) {
+            return res.status(400).json({
+                message: 'usuario inactivo',
+                code: 'auth/account-inactive',
+            })
+        }
+        //verificar la contraseña
+        const validPassword = bcryptjs.compareSync(password, usuario.password);
+        if (!validPassword) {
+            return res.status(400).json({
+                message: 'usuario o password no son correctos',
+                code: 'auth/account-invalid-password',
+            })
+        }
+        //generar JWT
+        //const token = await generarJWT( usuario.id );
+        return res.status(200).json({
+            message: 'login exitoso',
+            code: 'auth/login-success',
+            data: usuario
+        })
 
-    // const { email, password } = req.body;
-    // const user = await User.findOne({ email: email })
-
-    // if (!user) {
-    //     return res.status(400).json({
-    //         msg: 'Usuario / Password no son correctos'
-    //     })
-    // }
-
-    // if (!user.status) {
-    //     return res.status(400).json({
-    //         msg: 'Usuario Inactivo'
-    //     })
-    // }
-
-    // const validatePassword = bcryptjs.compareSync(password, user.password);
-
-    // if (!validatePassword) {
-    //     return res.status(400).json({
-    //         msg: 'Usuario / Password no son correctos'
-    //     })
-    // }
-
-    // const token = await generateJWTToken({
-    //     uid: user._id,
-    //     email: user.email,
-    //     firstName: user.firstName,
-    //     lastName: user.lastName
-    // });
-
-    // res.json({
-    //     user,
-    //     token,
-    //     msg: 'Login Success'
-    // })
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Something went wrong',
+        })
+    }
 }
+
 
 
 export const createUserWithEmailAndPassword = async (req: Request, res: Response) => {
@@ -98,7 +88,6 @@ export const createUserWithEmailAndPassword = async (req: Request, res: Response
         })
 
     } catch (error: any) {
-        console.log(error)
         return res.status(500).json({
             message: 'Something went wrong',
         })
