@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import e, { Request, Response } from 'express'
 import bcryptjs from 'bcryptjs'
 import User from '../models/users.model'
 import { generateJWTToken } from '../helpers/jwt.helper';
@@ -116,6 +116,20 @@ export const createUserWithEmailAndPassword = async (req: Request, res: Response
         if (error.code === 'auth/phone-number-already-exists') {
             return res.status(500).json({
                 message: `El Numero de Teléfono ya se encuentra registrado, Inténtalo con otro numero`,
+                code: error.code
+            })
+        }
+
+        if (error.code === 'auth/invalid-password') {
+            return res.status(500).json({
+                message: `El Password debe tener al menos 6 caracteres`,
+                code: error.code
+            })
+        }
+
+        if (error.code === 'auth/invalid-phone-number') {
+            return res.status(500).json({
+                message: `El Numero de Teléfono debe tener al menos 7 caracteres`,
                 code: error.code
             })
         }
