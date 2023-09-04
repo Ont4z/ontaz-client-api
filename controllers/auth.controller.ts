@@ -7,14 +7,9 @@ import Server from "../server/server";
 export const loginWithEmailAndPassword = async (req: Request, res: Response) => {
     // const server = new Server();
     // try {
-    //     const { uid, email, displayName } = await server.firebase.auth().createUser({
-    //         email: 'ivan.perez.chan@hotmail.com',
-    //         emailVerified: false,
-    //         phoneNumber: '+16505550103',
-    //         password: '123456789',
-    //         displayName: 'test from node api',
-    //         photoURL: 'https://lh3.googleusercontent.com/ogw/AGvuzYYwwZDdRe1b6DyzfV_ZAyBP6RdwX4nsV1EPyMVNiw=s32-c-mo',
-    //     })
+
+
+    //     await server.firebase.auth().signInWithEmailAndPassword(req.body.email, req.body.password)
 
     //     console.log({
     //         uid, email, displayName
@@ -66,74 +61,44 @@ export const loginWithEmailAndPassword = async (req: Request, res: Response) => 
 
 
 export const createUserWithEmailAndPassword = async (req: Request, res: Response) => {
-
+    const photoURL = 'https://firebasestorage.googleapis.com/v0/b/ontaz-7a32a.appspot.com/o/assets-defaults%2Fno-user-photo.png?alt=media&token=d80f2792-fe4f-43ff-a140-0600ef0c5394'
     try {
-        const server = new Server();
-        const codePhone = '+52'
-        const { email, password, fullName, phoneNumber } = req.body;
 
-        const { uid, photoURL } = await server.firebase.auth().createUser({
-            email: email,
-            emailVerified: false,
-            phoneNumber: codePhone + phoneNumber,
-            password: password,
-            displayName: fullName,
-            photoURL: 'https://firebasestorage.googleapis.com/v0/b/ontaz-7a32a.appspot.com/o/assets-defaults%2Fno-user-photo.png?alt=media&token=d80f2792-fe4f-43ff-a140-0600ef0c5394',
-        })
+        const codePhone = '+52'
+        const { email, password, displayName, phoneNumber } = req.body;
+
+        const existUser = await User.countDocuments({ email, status: true })
+
+        if (existUser > 0) {
+            return res.json({
+                message: 'El correo ya se encuentra registrado, Inténtalo con otro correo',
+                code: 'auth/email-already-exists',
+            });
+        }
 
         const user = new User({
             email: email,
-            fullName: fullName,
+            fullName: displayName,
+            codeCountry: codePhone,
             phoneNumber: phoneNumber,
-            firebaseId: uid,
             photoURL: photoURL
         })
+
+        const salt = bcryptjs.genSaltSync();
+
+        user.password = bcryptjs.hashSync(password, salt);
+        user.crypt.salt = salt;
 
         await user.save()
 
         return res.status(200).json({
             message: 'Registro exitoso',
             code: 'auth/account-created',
-            data: {
-                id: user._id,
-                firebaseId: uid,
-                email,
-                fullName,
-                phoneNumber,
-                photoURL: photoURL,
-            }
+            data: user
         })
 
     } catch (error: any) {
-
-        if (error.code === 'auth/email-already-exists') {
-            return res.status(500).json({
-                message: `El correo ya se encuentra registrado, Inténtalo con otro correo`,
-                code: error.code
-            })
-        }
-
-        if (error.code === 'auth/phone-number-already-exists') {
-            return res.status(500).json({
-                message: `El Numero de Teléfono ya se encuentra registrado, Inténtalo con otro numero`,
-                code: error.code
-            })
-        }
-
-        if (error.code === 'auth/invalid-password') {
-            return res.status(500).json({
-                message: `El Password debe tener al menos 6 caracteres`,
-                code: error.code
-            })
-        }
-
-        if (error.code === 'auth/invalid-phone-number') {
-            return res.status(500).json({
-                message: `El Numero de Teléfono debe tener al menos 7 caracteres`,
-                code: error.code
-            })
-        }
-
+        console.log(error)
         return res.status(500).json({
             message: 'Something went wrong',
         })

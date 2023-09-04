@@ -2,13 +2,13 @@ import { model, Schema, Document } from 'mongoose';
 
 export interface IUser extends Document {
     id: string;
-    firebaseId: string;
     email: string;
     fullName: string;
     phoneNumber: string;
     codeCountry: string;
     photoURL: string;
     status: boolean;
+    password: string;
     location: {
         type: string;
         coordinates: number[];
@@ -18,15 +18,19 @@ export interface IUser extends Document {
         maxDistance: number;
         fcmToken: string;
     },
+    crypt: {
+        salt: string;
+    }
+    typeAccount: 'USER' | 'SELLER' | 'ADMIN',
     createdAt: Date;
 }
 
 const userSchema = new Schema<IUser>({
-    firebaseId: {
+    email: String,
+    password: {
         type: String,
         required: true,
     },
-    email: String,
     fullName: String,
     status: {
         type: Boolean,
@@ -71,6 +75,14 @@ const userSchema = new Schema<IUser>({
             default: ''
         },
     },
+    typeAccount: {
+        type: String,
+        enum: ['USER', 'SELLER', 'ADMIN'],
+        default: 'USER'
+    },
+    crypt: {
+        salt: String
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -78,7 +90,7 @@ const userSchema = new Schema<IUser>({
 })
 
 userSchema.methods.toJSON = function () {
-    const { __v, _id, status, ...user } = this.toObject();
+    const { __v, _id, status, password, crypt, location, ...user } = this.toObject();
     user.id = _id;
     return user;
 }
