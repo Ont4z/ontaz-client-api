@@ -2,14 +2,26 @@ import { Request, Response } from 'express'
 
 
 import subCategoryModel from '../models/subCategory.model';
+import mongoose from 'mongoose';
 
 export const getSubCategoriesByIdCategory = async (req: Request, res: Response) => {
     try {
         const { lang = "es", idCategory } = req.query;
 
-        const subcategories = await subCategoryModel.find({ idCategory, isDeleted: false }).sort({ name: 1 });
+        const All = {
+            id: 'all',
+            name: {
+                es: 'Todos',
+                en: 'All',
+                fr: 'Tous'
+            },
+            idCategory: 'all',
+            isDeleted: false
+        }
 
-        res.json(subcategories.map((subcategory: any) => {
+        const subcategories = await subCategoryModel.find({ idCategory, isDeleted: false }).sort({ name: 1 });
+        const subcategoriesWithAll = [All, ...subcategories]
+        res.json(subcategoriesWithAll.map((subcategory: any) => {
             return {
                 id: subcategory.id,
                 name: subcategory.name[String(lang)],
@@ -17,6 +29,7 @@ export const getSubCategoriesByIdCategory = async (req: Request, res: Response) 
             }
         }))
     } catch (error) {
+        console.log(error)
         res.status(500).json({
             msg: 'Something went wrong'
         })
