@@ -12,7 +12,8 @@ export const getCommercesByIdCategoryAndSubCategory = async (req: Request, res: 
                 {
                     id: item.id,
                     name: item.name,
-                    logoUrl: item.logoUrl.imageUrl
+                    logoUrl: item.logoUrl.imageUrl,
+                    totalILike: item.iLikeReceivedIds.length
                 }
             )))
         } else {
@@ -21,7 +22,8 @@ export const getCommercesByIdCategoryAndSubCategory = async (req: Request, res: 
                 {
                     id: item.id,
                     name: item.name,
-                    logoUrl: item.logoUrl.imageUrl
+                    logoUrl: item.logoUrl.imageUrl,
+                    totalILike: item.iLikeReceivedIds.length
                 }
             )))
         }
