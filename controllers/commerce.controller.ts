@@ -8,10 +8,22 @@ export const getCommercesByIdCategoryAndSubCategory = async (req: Request, res: 
 
         if (idSubCategory !== 'all' && idSubCategory) {
             const commerces = await commerce.find({ idCategory, idSubCategory, isDeleted: false }).sort({ name: 1 });
-            return res.json(commerces)
+            return res.json(commerces.map((item) => (
+                {
+                    id: item.id,
+                    name: item.name,
+                    logoUrl: item.logoUrl.imageUrl
+                }
+            )))
         } else {
             const commerces = await commerce.find({ idCategory, isDeleted: false }).sort({ name: 1 });
-            return res.json(commerces)
+            return res.json(commerces.map((item) => (
+                {
+                    id: item.id,
+                    name: item.name,
+                    logoUrl: item.logoUrl.imageUrl
+                }
+            )))
         }
     } catch (error) {
         console.log(error)
