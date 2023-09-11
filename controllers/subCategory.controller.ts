@@ -2,7 +2,6 @@ import { Request, Response } from 'express'
 
 
 import subCategoryModel from '../models/subCategory.model';
-import mongoose from 'mongoose';
 
 export const getSubCategoriesByIdCategory = async (req: Request, res: Response) => {
     try {
