@@ -93,3 +93,30 @@ export const createUserWithEmailAndPassword = async (req: Request, res: Response
         })
     }
 }
+
+
+export const addOrUpdateTokenFCMUser = async (req: Request, res: Response) => {
+    const { fcmToken, id } = req.body;
+    try {
+        const user = await User.findOne({ _id: id });
+        if (!user) {
+            return res.status(404).json({
+                message: 'Usuario no encontrado',
+                code: 'auth/user-not-found',
+            })
+        }
+
+        user.settings.fcmToken = fcmToken;
+        await user.save()
+
+        return res.status(200).json({
+            message: 'Registro exitoso',
+            code: 'auth/token-saved-or-updated'
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Something went wrong',
+        })
+    }
+
+}
