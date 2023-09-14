@@ -100,6 +100,7 @@ export const addOrUpdateTokenFCMUser = async (req: Request, res: Response) => {
     const { fcmToken, id } = req.body;
     try {
         const user = await User.findOne({ _id: id });
+
         if (!user) {
             return res.status(404).json({
                 message: 'Usuario no encontrado',
@@ -107,7 +108,8 @@ export const addOrUpdateTokenFCMUser = async (req: Request, res: Response) => {
             })
         }
 
-        user.settings.fcmToken = fcmToken;
+        user.settings.fcmToken = String(fcmToken);
+
         await user.save()
 
         await sendNotificationFCM({
