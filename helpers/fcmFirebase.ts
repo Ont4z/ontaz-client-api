@@ -2,12 +2,14 @@ import axios from 'axios'
 
 
 export const sendNotificationFCM = async ({
+    title,
     body,
     idsFCM,
-}: { body: string, idsFCM: string[] }) => {
+}: { body: string, idsFCM: string[], title: string }) => {
     try {
         await axios.post('https://fcm.googleapis.com/fcm/send', {
             "notification": {
+                "title": title,
                 "body": body,
             },
             "registration_ids": idsFCM,

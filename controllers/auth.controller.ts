@@ -111,7 +111,8 @@ export const addOrUpdateTokenFCMUser = async (req: Request, res: Response) => {
         await user.save()
 
         await sendNotificationFCM({
-            body: 'Bienvenido a Ontaz',
+            title: 'Ontaz',
+            body: `Bienvenido ${user.fullName}`,
             idsFCM: [fcmToken]
         })
 
