@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import bcryptjs from 'bcryptjs'
 import User from '../models/users.model'
+import { sendNotificationFCM } from '../helpers/fcmFirebase';
 // import { generateJWTToken } from '../helpers/jwt.helper';
 // import Server from "../server/server";
 
@@ -109,6 +110,11 @@ export const addOrUpdateTokenFCMUser = async (req: Request, res: Response) => {
         user.settings.fcmToken = fcmToken;
         await user.save()
 
+        await sendNotificationFCM({
+            body: 'Bienvenido a Ontaz',
+            idsFCM: [fcmToken]
+        })
+
         return res.status(200).json({
             message: 'Registro exitoso',
             code: 'auth/token-saved-or-updated'
@@ -118,5 +124,4 @@ export const addOrUpdateTokenFCMUser = async (req: Request, res: Response) => {
             message: 'Something went wrong',
         })
     }
-
 }
