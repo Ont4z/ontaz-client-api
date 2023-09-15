@@ -108,15 +108,16 @@ export const addOrUpdateTokenFCMUser = async (req: Request, res: Response) => {
             })
         }
 
+        if (!user.settings.fcmToken) {
+            await sendNotificationFCM({
+                title: 'Ontaz',
+                body: `Bienvenido ${user.fullName}`,
+                idsFCM: [fcmToken]
+            })
+        }
+
         user.settings.fcmToken = String(fcmToken);
-
         await user.save()
-
-        await sendNotificationFCM({
-            title: 'Ontaz',
-            body: `Bienvenido ${user.fullName}`,
-            idsFCM: [fcmToken]
-        })
 
         return res.status(200).json({
             message: 'Registro exitoso',
