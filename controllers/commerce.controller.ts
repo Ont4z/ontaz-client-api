@@ -34,3 +34,24 @@ export const getCommercesByIdCategoryAndSubCategory = async (req: Request, res: 
         })
     }
 }
+
+
+export const getCommerceById = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const commerceFound = await commerce.findOne({ _id: id, isDeleted: false });
+        if (!commerceFound) {
+            return res.status(404).json({
+                msg: 'Commerce not found'
+            })
+        }
+
+
+        return res.json(commerceFound)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            msg: 'Something went wrong'
+        })
+    }
+}
