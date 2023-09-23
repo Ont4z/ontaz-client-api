@@ -27,7 +27,7 @@ export const getCategories = async (req: Request, res: Response) => {
 
 
         const categories = await categoryModel.find({
-            _id: { $in: uniqueCategoriesIds.map((categoryId) => new mongoose.Types.ObjectId(categoryId)) }
+            _id: { $in: uniqueCategoriesIds.map((categoryId) => new mongoose.Types.ObjectId(categoryId)) }, isDeleted: false
         })
 
         res.json(categories?.map((category: any) => {
